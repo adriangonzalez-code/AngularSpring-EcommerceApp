@@ -6,6 +6,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { HttpClientModule } from "@angular/common/http";
 import { ProductService } from "./services/product.service";
 import { Routes, RouterModule } from "@angular/router";
+import {NgOptimizedImage} from "@angular/common";
 
 const routes : Routes = [
   { path: 'category/:id', component: ProductListComponent },
@@ -23,7 +24,8 @@ const routes : Routes = [
   imports: [
     BrowserModule,
     HttpClientModule,
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    NgOptimizedImage
   ],
   providers: [ProductService],
   bootstrap: [AppComponent]

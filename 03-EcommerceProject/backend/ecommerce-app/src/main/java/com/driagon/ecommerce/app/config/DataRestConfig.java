@@ -1,12 +1,15 @@
 package com.driagon.ecommerce.app.config;
 
+import com.driagon.ecommerce.app.entities.Country;
 import com.driagon.ecommerce.app.entities.Product;
 import com.driagon.ecommerce.app.entities.ProductCategory;
+import com.driagon.ecommerce.app.entities.State;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
+import org.springframework.data.rest.core.mapping.ExposureConfigurer;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -30,19 +33,27 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         HttpMethod[] unsupportedMethods = { HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE };
 
         // Disable HTTP Method for Products POST, PUT and DELETE
-        config.getExposureConfiguration()
-                .forDomainType(Product.class)
-                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
-                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+        this.disableHttpMethods(config.getExposureConfiguration()
+                .forDomainType(Product.class), unsupportedMethods);
 
         // Disable HTTP Method for Product Category POST, PUT and DELETE
-        config.getExposureConfiguration()
-                .forDomainType(ProductCategory.class)
-                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
-                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+        this.disableHttpMethods(config.getExposureConfiguration()
+                .forDomainType(ProductCategory.class), unsupportedMethods);
+
+        this.disableHttpMethods(config.getExposureConfiguration()
+                .forDomainType(Country.class), unsupportedMethods);
+
+        this.disableHttpMethods(config.getExposureConfiguration()
+                .forDomainType(State.class), unsupportedMethods);
 
         // Call in internal helper method
         exposeIds(config);
+    }
+
+    private void disableHttpMethods(ExposureConfigurer config, HttpMethod[] unsupportedMethods) {
+        config
+                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
+                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
     }
 
     private void exposeIds(RepositoryRestConfiguration config) {

@@ -4,6 +4,7 @@ import { ShopFormServiceService } from "../../services/shop-form-service.service
 import { Country } from "../../common/country";
 import { State } from "../../common/state";
 import { ShopValidators } from "../../validators/shop-validators";
+import { CartService } from "../../services/cart.service";
 
 @Component({
   selector: 'app-checkout',
@@ -24,7 +25,7 @@ export class CheckoutComponent implements OnInit {
   shippingAddressStates: State[] = [];
   billingAddressStates: State[] = [];
 
-  constructor(private formBuilder: FormBuilder, private shopFormService : ShopFormServiceService) {
+  constructor(private formBuilder: FormBuilder, private shopFormService : ShopFormServiceService, private cartService : CartService) {
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
         firstName: new FormControl('', [Validators.required, Validators.minLength(2), ShopValidators.notOnlyWhitespace]),
@@ -57,6 +58,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    this.reviewCartDetails();
 
     // Populate credit card months
     const startMonth: number = new Date().getMonth() + 1;
@@ -226,5 +229,17 @@ export class CheckoutComponent implements OnInit {
 
   get creditCardSecurityCode() {
     return this.checkoutFormGroup.get('creditCard.securityCode');
+  }
+
+  private reviewCartDetails() {
+    // Subscribe to cartService.totalQuantity
+    this.cartService.totalQuantity.subscribe(
+      totalQuantity => this.totalQuantity = totalQuantity
+    );
+
+    // Subscribe to cartService.totalPrice
+    this.cartService.totalPrice.subscribe(
+      totalPrice => this.totalPrice = totalPrice
+    );
   }
 }
